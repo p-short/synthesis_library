@@ -1,0 +1,10 @@
+- wrap RTMidi for MIDI device selection/connection
+- figure out a way to pan in stereo field
+- create pink noise oscillator
+- create blue noise oscillator
+- create audio sample play back 
+- create envelopes
+- figure out how to sequence things.
+- figure out how to make poly synth out of oscillators and envelopes.
+- create dsp modules: chorus, distortion, reverb, delay etc..
+- remove set and get pan from soundsource and osc member functions
