@@ -2,6 +2,7 @@ project(musiclib)
 
 set(SOURCE_FILES 
     ${CMAKE_CURRENT_SOURCE_DIR}/audioengine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/midimanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/soundsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sinewave.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/trianglewave.cpp
@@ -17,10 +18,12 @@ add_library(music_language STATIC ${SOURCE_FILES})
 target_include_directories(music_language PRIVATE
     ${rtaudio_SOURCE_DIR}
     ${xoshiro_SOURCE_DIR}
+    ${rtmidi_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(music_language PRIVATE
+    rtmidi
     rtaudio
     "-framework CoreAudio"
     "-framework CoreFoundation"

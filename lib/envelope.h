@@ -20,9 +20,9 @@ namespace musiclib {
         double m_decay;
         double m_sustainLevel;
         double m_release;
-        
-        double m_attackInc { 0.0 };
-        double m_decayInc { 0.0 };
+
+        //double m_attackInc { 0.0 };
+        //double m_decayInc { 0.0 };
 
         enum class Stage { NOT_ACTIVE = 0,
                            ATTACK,

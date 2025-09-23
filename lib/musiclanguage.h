@@ -8,6 +8,7 @@
 #include "sawwave.h"
 #include "noise.h"
 #include "audioengine.h"
+#include "midimanager.h"
 #include "envelope.h"
 #include "utility.h"
 

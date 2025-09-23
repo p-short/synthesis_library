@@ -1,5 +1,7 @@
 #include <iostream>
 #include "musiclanguage.h"
+#include <vector>
+#include <cstdint>
 
 //musiclib::Oscillator::Sinewave sinewave;
 //musiclib::Oscillator::Trianglewave tri;
@@ -10,24 +12,68 @@ musiclib::Utility::Interpolate interpolate(0.0, 1.0, 5.0);
 musiclib::Envelope envelope(5.0, 2.0, 0.5, 5.0);
 double ramp = 0.0;
 
-void Play(double* output) {
-    envelope.NoteOn();
-    envelope.Process();
-    // envelope.NoteOff();
+void mycallback(double deltaTime, const std::vector<uint8_t>& message) {
+    uint8_t statusByte = message[0];
+    uint8_t noteState = statusByte & 0xF0; // upper 4 bits, lower 4 bits is Midi channel.
 
-    ramp = interpolate.Process();
-    double sample = saw.Process(); //+ (whiteNoise.Process() * 0.5);
-    double mix = sample * ramp;
-    output[0] = mix * 0.20;
+    uint8_t dataByteOne = message[1]; // note values
+    uint8_t dataByteTwo = message[2]; // note velocity
+
+    if (noteState == 0x90) {
+        std::cout << "Note on.\n";
+        std::cout << "Note value: " << static_cast<int32_t>(dataByteOne) << "\n" <<
+        "Note velocity: " << static_cast<int32_t>(dataByteTwo) << "\n";
+        envelope.NoteOn();
+    }
+    
+    if (noteState == 0x80) {
+        std::cout << "Note off.\n";
+        envelope.NoteOff();
+    }
+}
+
+void Play(double* output) {
+    double envOut = envelope.Process();
+    std::cout << "envelope.Process: " << envOut << "\n";
+
+    //ramp = interpolate.Process();
+    double sample = saw.Process() * envOut; //+ (whiteNoise.Process() * 0.5);
+    //double mix = sample * ramp;
+    output[0] = sample * 0.20;
     output[1] = output[0];
 }
 
 int main() {
+
+    char input;
+    std::cout << "\nsearch for midi devices ... press <enter>\n";
+    std::cin.get( input );
+
+    musiclib::MidiManager& midi_mgr = musiclib::MidiManager::GetInstance();
+
+    const uint32_t numberOfMidiDevices = midi_mgr.GetDeviceCount();
+    if (numberOfMidiDevices == 0) {
+        std::cout << "No Midi devices found\n";
+        exit(0);
+    }
+    std::cout << "Number of Midi devices: " << numberOfMidiDevices << "\n";
+
+    for (size_t i = 0; i < numberOfMidiDevices; ++i)
+        std::cout << "Device name: " << i << ": " << midi_mgr.GetDeviceName(i) << "\n";
+    
+    if (!midi_mgr.ConnectDevice(0)) {
+        std::cout << "Failed to open device 0\n";
+        exit(0);
+    } 
+    std::cout << "Connected to device 0\n";
+
+    midi_mgr.AssignCallback(mycallback);
+    std::cout << "Midi callback assigned\n";
+    
     musiclib::AudioEngine& dac = musiclib::AudioEngine::GetInstance();
     dac.AssignCallback(Play);
     dac.Start();
 
-    char input;
     std::cout << "\nPlaying ... press <enter> to quit.\n";
     std::cin.get( input );
 

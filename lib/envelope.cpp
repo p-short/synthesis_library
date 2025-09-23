@@ -12,18 +12,21 @@ namespace musiclib {
                        m_release(release) {}
 
     void Envelope::NoteOn() {
-        if (m_attackInc > 0.0) {
-            stage = Stage::ATTACK;
-            std::cout << "NoteOn: Attack\n";
-        } else if (m_decayInc >= 0.0) {
-            currentEnvelopeValue = 1.0;
-            stage = Stage::DECAY;
-            std::cout << "NoteOn: Decay\n";
-        } else {
-            currentEnvelopeValue = m_sustainLevel;
-            stage = Stage::SUSTAIN;
-            std::cout << "NoteOn: Sustain\n";
-        }
+        m_attackRamp.SetParameters(0.0, 1.0, m_attack);
+        stage = Stage::ATTACK;
+
+        // if (m_attackInc > 0.0) {
+        //     stage = Stage::ATTACK;
+        //     std::cout << "NoteOn: Attack\n";
+        // } else if (m_decayInc >= 0.0) {
+        //     currentEnvelopeValue = 1.0;
+        //     stage = Stage::DECAY;
+        //     std::cout << "NoteOn: Decay\n";
+        // } else {
+        //     currentEnvelopeValue = m_sustainLevel;
+        //     stage = Stage::SUSTAIN;
+        //     std::cout << "NoteOn: Sustain\n";
+        // }
     }
 
     void Envelope::NoteOff() {
@@ -37,32 +40,40 @@ namespace musiclib {
         }
     }
 
+    //int count = 0;
     double Envelope::Process() {
+        // count++;
+        // if (count > 1000) 
+        //     count = 0;
+
         switch (stage) {
             case Stage::NOT_ACTIVE: {
-                std::cout << "Process::NOT_ACTIVE\n";
+                //if (count == 0)
+                    //std::cout << "Process::NOT_ACTIVE\n";
                 return 0.0;
             }
 
             case Stage::ATTACK: {
-                m_attackInc = m_attackRamp.Process();
-                std::cout << "Process:: attackramp: " << m_attackInc * 1000.0 << "\n";
-                currentEnvelopeValue = m_attackInc;
+                //if (count == 0)
+                    //std::cout << "Process::ATTACK\n";
+
+                currentEnvelopeValue = m_attackRamp.Process();
 
                 if (currentEnvelopeValue >= 1.0) {
                     currentEnvelopeValue = 1.0;
                     m_attackRamp.SetParameters(0.0, 1.0, m_attack);
-                    std::cout << "Processing:: reseting\n";
+                    //std::cout << "Processing:: reseting\n";
                     AdvanceStage();
                 }
 
-                std::cout << "breaking\n";
+                //std::cout << "breaking\n";
                 break;
             }
 
             case Stage::DECAY: {
-                m_decayInc = m_decayRamp.Process();
-                currentEnvelopeValue = m_decayInc;
+                //if (count == 0)
+                    //std::cout << "Process::DECAY\n";
+                currentEnvelopeValue = m_decayRamp.Process();
 
                 if (currentEnvelopeValue <= m_sustainLevel) {
                     currentEnvelopeValue = m_sustainLevel;
@@ -74,10 +85,16 @@ namespace musiclib {
             }
 
             case Stage::SUSTAIN:
+                //if (count == 0)
+                    //std::cout << "Process::SUSTAIN\n";
+
                 currentEnvelopeValue = m_sustainLevel; 
                 break;
 
             case Stage::RELEASE: {
+                //if (count == 0)
+                    //std::cout << "Process::RELEASE\n";
+
                 currentEnvelopeValue = m_releaseRamp.Process();
 
                 if (currentEnvelopeValue <= 0.0) {
@@ -95,7 +112,7 @@ namespace musiclib {
 
     void Envelope::AdvanceStage() {
         if (stage == Stage::ATTACK) {
-            stage = m_decayInc > 0.0f ? Stage::DECAY : Stage::SUSTAIN;
+            stage = Stage::DECAY; //m_decayInc > 0.0f ? Stage::DECAY : Stage::SUSTAIN;
             return;
         }
 
