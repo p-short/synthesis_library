@@ -49,6 +49,8 @@ namespace musiclib {
         if (status)
         std::cout << "Stream underflow detected!" << std::endl;
 
+        //std::cout << "nBufferFrames: " << nBufferFrames << "\n";
+
         for (unsigned int i = 0; i < nBufferFrames; ++i) {
             if (engine->m_callback) 
                 engine->m_callback(engine->m_data);

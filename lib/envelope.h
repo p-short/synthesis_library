@@ -6,7 +6,9 @@
 namespace musiclib {
     class Envelope {
     public:
+        Envelope();
         Envelope(double attack, double decay, double sustain, double release);
+        void SetParameters(double attack, double decay, double sustain, double release);
         void NoteOn();
         void NoteOff();
         double Process();
@@ -21,19 +23,10 @@ namespace musiclib {
         double m_sustainLevel;
         double m_release;
 
-        //double m_attackInc { 0.0 };
-        //double m_decayInc { 0.0 };
-
-        enum class Stage { NOT_ACTIVE = 0,
-                           ATTACK,
-                           DECAY,
-                           SUSTAIN,
-                           RELEASE
-        };
+        enum class Stage { NOT_ACTIVE = 0, ATTACK, DECAY, SUSTAIN, RELEASE };
 
         Stage stage { Stage::NOT_ACTIVE };
         double currentEnvelopeValue { 0.0 };
-
         void AdvanceStage();
     };
 }

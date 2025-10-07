@@ -11,5 +11,7 @@
 #include "midimanager.h"
 #include "envelope.h"
 #include "utility.h"
+#include "sampleplayer.h"
+#include "clock.h"
 
 #endif // MUSICLANGUAGE_LIB_MUSICLANGUANGE_H

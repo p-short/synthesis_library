@@ -38,5 +38,16 @@ set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "" FORCE)
 
 FetchContent_MakeAvailable(rtaudio)
 
+FetchContent_Declare(
+  audiofile
+  GIT_REPOSITORY https://github.com/adamstark/AudioFile.git
+  GIT_TAG 1.1.3
+)
+
+set(BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
+
+FetchContent_MakeAvailable(audiofile)
+
 add_subdirectory(lib)
 add_subdirectory(client_app)

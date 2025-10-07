@@ -11,6 +11,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/envelope.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/noise.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utility.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sampleplayer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clock.cpp
 )
 
 add_library(music_language STATIC ${SOURCE_FILES})
@@ -19,6 +21,7 @@ target_include_directories(music_language PRIVATE
     ${rtaudio_SOURCE_DIR}
     ${xoshiro_SOURCE_DIR}
     ${rtmidi_SOURCE_DIR}
+    ${audiofile_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -29,5 +32,3 @@ target_link_libraries(music_language PRIVATE
     "-framework CoreFoundation"
     "-framework AudioUnit"
 )
-
-

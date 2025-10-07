@@ -1,74 +1,158 @@
 #include <iostream>
 #include "musiclanguage.h"
 #include <vector>
+#include <array>
 #include <cstdint>
 
-//musiclib::Oscillator::Sinewave sinewave;
-//musiclib::Oscillator::Trianglewave tri;
-//musiclib::Oscillator::Squarewave rect;
+// TODO: investigate envelope attack being cut short on some notes.
+class PolySynth {
+    struct Voice {
+        bool isActive;
+        uint32_t midiNote;
+        musiclib::Oscillator::Sawwave saw;
+        musiclib::Envelope envelope;
+        double duration;
+    };
+
+    std::array<Voice, 16> voices;
+
+public:
+    PolySynth() {
+        for (auto& voice : voices) {
+            voice.isActive = false;
+            voice.midiNote = 0;
+            voice.envelope.SetParameters(1.0, 1.5, 0.6, 2.0); 
+            voice.duration = 0.0;
+        }
+    }
+
+    void NoteOn(const uint32_t midiNote) {
+        for (auto& voice : voices) {
+            if (!voice.isActive) {
+                voice.isActive = true;
+                voice.midiNote = midiNote;
+                voice.saw.SetFrequency(musiclib::Utility::MidiNoteToHz(midiNote));
+                voice.envelope.NoteOn();
+                return;
+            }
+        }
+    }
+
+    void NoteOff(const uint32_t midiNote) {
+        for (auto& voice : voices) {
+            if (voice.isActive && voice.midiNote == midiNote)
+                voice.envelope.NoteOff();
+        }
+    }
+
+    double Process() {
+        double mix = 0.0;
+        double env;
+        for (auto& voice : voices) {
+            if (voice.isActive) {
+                env = voice.envelope.Process();
+                mix += voice.saw.Process() * env;
+
+                if (env <= 0.0) {
+                    std::cout << "env <= 0.0, marking as inactive\n";
+                    voice.isActive = false;
+                }
+            }
+        }
+        return mix * 0.2;
+    }
+};
+
+PolySynth polySynth;
+
 musiclib::Oscillator::Sawwave saw;
 musiclib::Oscillator::Noise::White whiteNoise;
 musiclib::Utility::Interpolate interpolate(0.0, 1.0, 5.0);
 musiclib::Envelope envelope(5.0, 2.0, 0.5, 5.0);
+musiclib::SamplePlayer samplePlayer;
 double ramp = 0.0;
+double frequency = 0.0;
+std::array<double, 2> WavLeftAndRight;
+std::shared_ptr<musiclib::Clock> masterClock = std::make_shared<musiclib::Clock>(120);
+// musiclib::ClockFollower clock_one(masterClock, Subdivision::QUARTER_NOTE);
+// musiclib::ClockFollower clock_two(masterClock, Subdivision::EIGHT_NOTE);
 
 void mycallback(double deltaTime, const std::vector<uint8_t>& message) {
     uint8_t statusByte = message[0];
-    uint8_t noteState = statusByte & 0xF0; // upper 4 bits, lower 4 bits is Midi channel.
+    // upper 4 bits, lower 4 bits is Midi channel.
+    uint8_t noteState = statusByte & 0xF0; 
 
     uint8_t dataByteOne = message[1]; // note values
     uint8_t dataByteTwo = message[2]; // note velocity
 
     if (noteState == 0x90) {
-        std::cout << "Note on.\n";
-        std::cout << "Note value: " << static_cast<int32_t>(dataByteOne) << "\n" <<
-        "Note velocity: " << static_cast<int32_t>(dataByteTwo) << "\n";
-        envelope.NoteOn();
+        std::cout << "Note on" << "\n" << "Note value: " << static_cast<uint32_t>(dataByteOne) << "\n" <<
+                     "Note velocity: " << static_cast<uint32_t>(dataByteTwo) << "\n";
+
+        // frequency = musiclib::Utility::MidiNoteToHz(static_cast<uint32_t>(dataByteOne));
+        // saw.SetFrequency(frequency);
+        // envelope.NoteOn();
+        polySynth.NoteOn(static_cast<uint32_t>(dataByteOne));
     }
     
     if (noteState == 0x80) {
         std::cout << "Note off.\n";
-        envelope.NoteOff();
+        //envelope.NoteOff();
+        polySynth.NoteOff(static_cast<uint32_t>(dataByteOne));
     }
 }
 
 void Play(double* output) {
-    double envOut = envelope.Process();
-    std::cout << "envelope.Process: " << envOut << "\n";
+    //double envOut = envelope.Process();
+    //double sample = saw.Process() * envOut;
+    masterClock->Process(1);
+    
+    //if (clock_one.IsBeat()) 
+        //std::cout << "\nim clock one!\n";
 
-    //ramp = interpolate.Process();
-    double sample = saw.Process() * envOut; //+ (whiteNoise.Process() * 0.5);
-    //double mix = sample * ramp;
-    output[0] = sample * 0.20;
-    output[1] = output[0];
+    //if (clock_two.IsBeat()) 
+        //std::cout << "\nim clock two!\n";
+    
+
+    //double sample = polySynth.Process();
+    //samplePlayer.Process(&WavLeftAndRight[0], &WavLeftAndRight[1]);
+    //std::cout << "sampleplayer output: " << WavLeftAndRight[0] << " " << WavLeftAndRight[1] << "\n";
+    //std::cout << "sampleplayer.isPLaying(): " << (samplePlayer.IsPlaying() ? "true" : "false") << "\n";
+    double sample = 0.20;
+    
+    output[0] = 0.0; //WavLeftAndRight[0] * sample;
+    output[1] = 0.0; //WavLeftAndRight[1] * sample;
 }
 
 int main() {
-
     char input;
     std::cout << "\nsearch for midi devices ... press <enter>\n";
     std::cin.get( input );
 
-    musiclib::MidiManager& midi_mgr = musiclib::MidiManager::GetInstance();
+    bool result = samplePlayer.LoadWAVFile("./snare.wav");
+    std::cout << ".wav file load result: " << (result ? "true" : "false") << "\n";
+    samplePlayer.loopEnable = true;
 
-    const uint32_t numberOfMidiDevices = midi_mgr.GetDeviceCount();
-    if (numberOfMidiDevices == 0) {
-        std::cout << "No Midi devices found\n";
-        exit(0);
-    }
-    std::cout << "Number of Midi devices: " << numberOfMidiDevices << "\n";
+    // musiclib::MidiManager& midi_mgr = musiclib::MidiManager::GetInstance();
 
-    for (size_t i = 0; i < numberOfMidiDevices; ++i)
-        std::cout << "Device name: " << i << ": " << midi_mgr.GetDeviceName(i) << "\n";
+    // const uint32_t numberOfMidiDevices = midi_mgr.GetDeviceCount();
+    // if (numberOfMidiDevices == 0) {
+    //     std::cout << "No Midi devices found\n";
+    //     exit(0);
+    // }
+    // std::cout << "Number of Midi devices: " << numberOfMidiDevices << "\n";
+
+    // for (size_t i = 0; i < numberOfMidiDevices; ++i)
+    //     std::cout << "Device name: " << i << ": " << midi_mgr.GetDeviceName(i) << "\n";
     
-    if (!midi_mgr.ConnectDevice(0)) {
-        std::cout << "Failed to open device 0\n";
-        exit(0);
-    } 
-    std::cout << "Connected to device 0\n";
+    // if (!midi_mgr.ConnectDevice(0)) {
+    //     std::cout << "Failed to open device 0\n";
+    //     exit(0);
+    // } 
+    // std::cout << "Connected to device 0\n";
 
-    midi_mgr.AssignCallback(mycallback);
-    std::cout << "Midi callback assigned\n";
+    // midi_mgr.AssignCallback(mycallback);
+    // std::cout << "Midi callback assigned\n";
     
     musiclib::AudioEngine& dac = musiclib::AudioEngine::GetInstance();
     dac.AssignCallback(Play);

@@ -5,7 +5,8 @@ namespace musiclib {
     class SoundSource {
     public:
         virtual ~SoundSource() = default;
-        virtual double Process() = 0;
+        virtual double Process();
+        virtual void Process(double* leftChannel, double* rightChannel);
         virtual SoundSource& SetAmplitude(double amplitude);
         virtual SoundSource& SetPan(double pan);
         virtual double GetAmplitude();

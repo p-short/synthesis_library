@@ -1,4 +1,5 @@
 #include "utility.h"
+#include "midinotetoHz.h"
 #include <iostream>
 
 namespace musiclib {
@@ -22,6 +23,10 @@ namespace musiclib {
             }   
 
             return m_current;
+        }
+
+        double MidiNoteToHz(uint32_t midiNote) {
+            return MidiNoteToHzContainer[midiNote];
         }
     }
 }

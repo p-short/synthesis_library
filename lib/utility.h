@@ -1,6 +1,8 @@
 #ifndef MUSICLANGUAGE_LIB_UTILITIES_H
 #define MUSICLANGUAGE_LIB_UTILITIES_H
 
+#include <cstdint>
+
 namespace musiclib {
     namespace Utility {
         class Interpolate {
@@ -14,6 +16,12 @@ namespace musiclib {
             double m_endValue {};
             double m_increment {};
         };
+
+        double MidiNoteToHz(uint32_t midiNote);
+
+        // TODO: add SamplesToMilliseconds
+        // TODO: add MillisecondsToSamples
+        
     }
 }
 #endif // MUSICLANGUAGE_LIB_UTILITIES_H
