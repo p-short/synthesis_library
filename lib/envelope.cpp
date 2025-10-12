@@ -1,7 +1,7 @@
 #include "envelope.h"
 #include <iostream>
 
-namespace musiclib {
+namespace Sculpt {
     Envelope::Envelope() : Envelope(0.1, 0.2, 0.5, 0.5) {}
     
     Envelope::Envelope(double attack, double decay, double sustain, double release) : 

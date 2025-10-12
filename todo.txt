@@ -7,3 +7,5 @@
 - figure out how to make poly synth out of oscillators and envelopes.
 - create dsp modules: chorus, distortion, reverb, delay etc..
 - remove set and get pan from soundsource and osc member functions
+- name lib Sculpt, remove musiclib
+- rename client app directory examples and fill it will examples of how to use Sculpt

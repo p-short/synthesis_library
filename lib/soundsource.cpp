@@ -1,6 +1,6 @@
 #include "soundsource.h"
 
-namespace musiclib {
+namespace Sculpt {
     double SoundSource::sampleRate = 44100.0;
 
     double SoundSource::Process() {

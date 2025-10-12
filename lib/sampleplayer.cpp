@@ -1,7 +1,7 @@
 #include "sampleplayer.h"
 #include "AudioFile.h"
 
-namespace musiclib {
+namespace Sculpt {
     bool SamplePlayer::LoadWAVFile(const std::filesystem::path& pathToWAVFile) {
         if (!audioFile)
             audioFile = std::make_shared<AudioFile<double>>();
@@ -42,15 +42,21 @@ namespace musiclib {
         }
     }
 
+    void SamplePlayer::Play() {
+        Reset();
+    }
+
     bool SamplePlayer::IsPlaying() {
         return readIndex > 0  && readIndex < numberOfSamples;
     }
 
     // TODO: fix, isPlaying should be true
     void SamplePlayer::Reset() {
+        /*
         std::cout << "isPlaying: " << (IsPlaying() ? "true" : "false") << "\n";
         std::cout << "resetting readIndex to 0\n";
         std::cout << "isPlaying: " << (IsPlaying() ? "true" : "false") << "\n";
+        */
         readIndex = 0;
     }
 }

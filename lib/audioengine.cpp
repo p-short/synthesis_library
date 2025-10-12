@@ -1,7 +1,7 @@
 #include "audioengine.h"
 #include "RtAudio.h"
 
-namespace musiclib {
+namespace Sculpt {
 
     AudioEngine::~AudioEngine() {
         if (m_dac && m_dac->isStreamOpen()) 

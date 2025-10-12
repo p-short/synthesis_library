@@ -51,3 +51,4 @@ FetchContent_MakeAvailable(audiofile)
 
 add_subdirectory(lib)
 add_subdirectory(client_app)
+add_subdirectory(client_app/polysynth)

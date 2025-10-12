@@ -2,7 +2,7 @@
 #include "midinotetoHz.h"
 #include <iostream>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Utility {
         Interpolate::Interpolate(double startValue, double endValue, double durationInSeconds) {
             m_current = startValue;

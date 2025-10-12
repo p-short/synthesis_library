@@ -1,7 +1,7 @@
 #include "sawwave.h"
 #include <algorithm>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         double Sawwave::Process() {
             double increment = m_frequency / SoundSource::sampleRate;

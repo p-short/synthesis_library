@@ -1,7 +1,7 @@
 #ifndef MUSICLANGUAGE_LIB_SOUNDSOURCE_H
 #define MUSICLANGUAGE_LIB_SOUNDSOURCE_H
 
-namespace musiclib {
+namespace Sculpt {
     class SoundSource {
     public:
         virtual ~SoundSource() = default;

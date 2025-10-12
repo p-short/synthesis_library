@@ -4,7 +4,7 @@
 #include "soundsource.h"
 #include <array>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         namespace Noise {
             class White : public SoundSource {

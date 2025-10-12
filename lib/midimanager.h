@@ -6,7 +6,7 @@
 
 class RtMidiIn;
 
-namespace musiclib {
+namespace Sculpt {
     class MidiManager {
     public:
         ~MidiManager();

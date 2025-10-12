@@ -4,7 +4,7 @@
 
 #include "soundsource.h"
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         class Sinewave : public SoundSource {
         public:

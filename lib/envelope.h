@@ -3,7 +3,7 @@
 
 #include "utility.h"
 
-namespace musiclib {
+namespace Sculpt {
     class Envelope {
     public:
         Envelope();

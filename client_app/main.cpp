@@ -1,16 +1,18 @@
 #include <iostream>
-#include "musiclanguage.h"
+#include "sculpt.h"
 #include <vector>
 #include <array>
 #include <cstdint>
+
+using namespace Sculpt;
 
 // TODO: investigate envelope attack being cut short on some notes.
 class PolySynth {
     struct Voice {
         bool isActive;
         uint32_t midiNote;
-        musiclib::Oscillator::Sawwave saw;
-        musiclib::Envelope envelope;
+        Oscillator::Sawwave saw;
+        Envelope envelope;
         double duration;
     };
 
@@ -31,7 +33,7 @@ public:
             if (!voice.isActive) {
                 voice.isActive = true;
                 voice.midiNote = midiNote;
-                voice.saw.SetFrequency(musiclib::Utility::MidiNoteToHz(midiNote));
+                voice.saw.SetFrequency(Utility::MidiNoteToHz(midiNote));
                 voice.envelope.NoteOn();
                 return;
             }
@@ -65,17 +67,19 @@ public:
 
 PolySynth polySynth;
 
-musiclib::Oscillator::Sawwave saw;
-musiclib::Oscillator::Noise::White whiteNoise;
-musiclib::Utility::Interpolate interpolate(0.0, 1.0, 5.0);
-musiclib::Envelope envelope(5.0, 2.0, 0.5, 5.0);
-musiclib::SamplePlayer samplePlayer;
+Oscillator::Sawwave saw;
+Oscillator::Noise::White whiteNoise;
+Utility::Interpolate interpolate(0.0, 1.0, 5.0);
+Envelope envelope(0.1, 0.2, 0.5, 0.2);
+SamplePlayer click;
+SamplePlayer tambourine;
 double ramp = 0.0;
 double frequency = 0.0;
-std::array<double, 2> WavLeftAndRight;
-std::shared_ptr<musiclib::Clock> masterClock = std::make_shared<musiclib::Clock>(120);
-// musiclib::ClockFollower clock_one(masterClock, Subdivision::QUARTER_NOTE);
-// musiclib::ClockFollower clock_two(masterClock, Subdivision::EIGHT_NOTE);
+std::array<double, 2> WavLeftAndRightOne;
+std::array<double, 2> WavLeftAndRightTwo;
+std::unique_ptr<Clock> masterClock = std::make_unique<Clock>(120);
+ClockFollower clock_one(masterClock.get(), Subdivision::QUARTER_NOTE);
+ClockFollower clock_two(masterClock.get(), Subdivision::EIGHT_NOTE);
 
 void mycallback(double deltaTime, const std::vector<uint8_t>& message) {
     uint8_t statusByte = message[0];
@@ -105,23 +109,24 @@ void mycallback(double deltaTime, const std::vector<uint8_t>& message) {
 void Play(double* output) {
     //double envOut = envelope.Process();
     //double sample = saw.Process() * envOut;
-    masterClock->Process(1);
+    masterClock->Process();
     
-    //if (clock_one.IsBeat()) 
-        //std::cout << "\nim clock one!\n";
+    if (clock_one.IsBeat()) 
+        click.Play();
 
-    //if (clock_two.IsBeat()) 
-        //std::cout << "\nim clock two!\n";
+    if (clock_two.IsBeat()) 
+        tambourine.Play();
     
 
     //double sample = polySynth.Process();
-    //samplePlayer.Process(&WavLeftAndRight[0], &WavLeftAndRight[1]);
+    click.Process(&WavLeftAndRightOne[0], &WavLeftAndRightOne[1]);
+    tambourine.Process(&WavLeftAndRightTwo[0], &WavLeftAndRightTwo[1]);
     //std::cout << "sampleplayer output: " << WavLeftAndRight[0] << " " << WavLeftAndRight[1] << "\n";
     //std::cout << "sampleplayer.isPLaying(): " << (samplePlayer.IsPlaying() ? "true" : "false") << "\n";
-    double sample = 0.20;
+    double gain = 0.20;
     
-    output[0] = 0.0; //WavLeftAndRight[0] * sample;
-    output[1] = 0.0; //WavLeftAndRight[1] * sample;
+    output[0] = (WavLeftAndRightOne[0] + WavLeftAndRightTwo[0]) * gain;
+    output[1] = (WavLeftAndRightOne[1] + WavLeftAndRightTwo[1]) * gain;
 }
 
 int main() {
@@ -129,9 +134,11 @@ int main() {
     std::cout << "\nsearch for midi devices ... press <enter>\n";
     std::cin.get( input );
 
-    bool result = samplePlayer.LoadWAVFile("./snare.wav");
-    std::cout << ".wav file load result: " << (result ? "true" : "false") << "\n";
-    samplePlayer.loopEnable = true;
+    bool result = click.LoadWAVFile("./button-click.wav");
+    std::cout << "button-click.wav load result: " << (result ? "true" : "false") << "\n";
+
+    result = tambourine.LoadWAVFile("./tambourine-low.wav");
+    std::cout << "tambourine load result: " << (result ? "true" : "false") << "\n";
 
     // musiclib::MidiManager& midi_mgr = musiclib::MidiManager::GetInstance();
 
@@ -154,7 +161,7 @@ int main() {
     // midi_mgr.AssignCallback(mycallback);
     // std::cout << "Midi callback assigned\n";
     
-    musiclib::AudioEngine& dac = musiclib::AudioEngine::GetInstance();
+    AudioEngine& dac = AudioEngine::GetInstance();
     dac.AssignCallback(Play);
     dac.Start();
 

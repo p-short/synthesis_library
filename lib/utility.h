@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Utility {
         class Interpolate {
         public:

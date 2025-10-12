@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         namespace Noise {
             White::White() {

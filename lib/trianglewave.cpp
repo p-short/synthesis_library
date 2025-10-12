@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         double Trianglewave::Process() {
             double increment = m_frequency / SoundSource::sampleRate;

@@ -3,41 +3,40 @@
 
 #include <memory>
 
+namespace Sculpt {
+
 enum class Subdivision {
     QUARTER_NOTE = 0,
     EIGHT_NOTE
 };
 
-namespace musiclib {
 class Clock {
 public:
-    Clock(const uint32_t bpm);
+    Clock(double bpm);
     void SetBPM(const double newBpm);
-    void Process(const uint32_t numberOfSamples);
-
-    //double GetCurrentBeatPosition();
+    void Process();
+    double GetCurrentPosition();
 
 private:
-    uint32_t m_bpm { 60 }; 
-    uint32_t m_totalSamples {0};
-    uint32_t m_interval {0};
-    uint32_t next_click;
+    double m_bpm { 120.0 };
     const double m_sampleRate { 44100.0 };
+    double m_totalSamples { 0.0 };
+    double m_secondsPerBeat { 0.5 };
 };
 
-// class ClockFollower {
-// public:
-//     ClockFollower(std::shared_ptr<Clock> clockSource, const Subdivision subdivision);
-//     bool IsBeat();
-//     void SetSubdivision(const Subdivision subdivision);
+class ClockFollower {
+public:
+    ClockFollower(Clock* clockSource, const Subdivision subdivision);
+    bool IsBeat();
+    void SetSubdivision(const Subdivision subdivision);
 
-// private:
-//     std::shared_ptr<Clock> m_clock { nullptr };
-//     Subdivision m_subdivision { Subdivision::QUARTER_NOTE };
-//     double m_lastBeat { 0.0 };
-//     double m_beatDivisor { 2.0 };
-//     double SelectCorrectBeatDivision(const Subdivision subdivision);
-// };
+private:
+    Clock* m_clock { nullptr };
+    Subdivision m_subdivision { Subdivision::QUARTER_NOTE };
+    double m_lastTriggerBeat { 0.0 };
+    double m_beatsPerTrigger { 1.0 }; // 1 = quarter note, 0.5 = eighth, etc.
+    double SelectCorrectBeatDivision(const Subdivision subdivision) const;
+};
 } //namespace
 
 #endif // MUSICLANGUAGE_LIB_CLOCK_H

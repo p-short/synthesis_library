@@ -1,7 +1,7 @@
 #include "squarewave.h"
 #include <algorithm>
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         double Squarewave::Process() {
             double increment = m_frequency / SoundSource::sampleRate;

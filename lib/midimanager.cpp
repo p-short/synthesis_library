@@ -1,7 +1,7 @@
 #include "midimanager.h"
 #include "RtMidi.h"
 
-namespace musiclib {
+namespace Sculpt {
 
     MidiManager::~MidiManager() = default;
 

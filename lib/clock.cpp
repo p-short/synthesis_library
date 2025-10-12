@@ -1,73 +1,60 @@
 #include "clock.h"
+#include <cmath>
 #include <iostream>
 
-// TODO: fix clock class, not working as expected
-namespace musiclib {
-Clock::Clock(const uint32_t bpm) {
-    m_bpm = bpm;
-    m_interval = static_cast<uint32_t>(60.0 / m_bpm * m_sampleRate + 0.5);
-    std::cout << "constructor::bpm: " << m_bpm << "\n";
-    std::cout << "constructor::interval: " << m_interval << "\n"; 
-    next_click = m_interval;
+namespace Sculpt {
+
+Clock::Clock(double bpm) : m_bpm(bpm) {
+    m_secondsPerBeat = 60.0 / m_bpm;
 }
 
 void Clock::SetBPM(const double newBpm) { m_bpm = newBpm; }
 
-void Clock::Process(const uint32_t numberOfSamples) {
-    m_totalSamples += numberOfSamples;
-    //std::cout << "number of samples, total: " << m_totalSamples << "\n";
-    while (m_totalSamples >= next_click) {
-        std::cout << "Click!\n";
-        next_click += m_interval;  // schedule next click
-    }
+void Clock::Process() {
+    m_totalSamples += 1.0;
 }
 
-// double Clock::GetCurrentBeatPosition() {
-//     return m_currentBeat;
-// }
+double Clock::GetCurrentPosition() {
+    // Convert total samples → seconds → beats
+    double secondsElapsed = m_totalSamples / m_sampleRate;
+    double beatsElapsed = secondsElapsed / m_secondsPerBeat;
+    return beatsElapsed;
+}
 
-// ClockFollower::ClockFollower(std::shared_ptr<Clock> clockSource, const Subdivision subdivision) :
-//                              m_clock(clockSource),
-//                              m_subdivision(subdivision),
-//                              m_beatDivisor(SelectCorrectBeatDivision(subdivision)) {
-//     m_lastBeat = m_clock->GetCurrentBeatPosition();
-//     std::cout << "divisor: " << m_beatDivisor << "\n";
-// }
+ClockFollower::ClockFollower(Clock* clockSource, const Subdivision subdivision) : m_clock(clockSource) {
+    SetSubdivision(subdivision);
+    m_lastTriggerBeat = m_clock->GetCurrentPosition();
+}
 
-// bool ClockFollower::IsBeat() {
-//     double beat = m_clock->GetCurrentBeatPosition();
-//     double interval = 1.0 / m_beatDivisor;
-//     //std::cout << "IsBeat::beat: " << beat << "\n";  
-//     //std::cout << "IsBeat::interval: " << interval << "\n"; 
+bool ClockFollower::IsBeat() {
+    if (!m_clock) return false;
 
-//     // handle wrap-around
-//     if (beat < m_lastBeat)
-//         m_lastBeat -= 1.0;
+    double currentBeat = m_clock->GetCurrentPosition();
 
-//     bool triggered = false;
-//     while (beat - m_lastBeat >= interval) {
-//         m_lastBeat += interval;
-//         triggered = true;
-//     }
+    // handle wrap-around naturally (no reset needed)
+    double beatDelta = currentBeat - m_lastTriggerBeat;
 
-//     // keep follower phase in range [0, 1)
-//     if (m_lastBeat >= 1.0)
-//         m_lastBeat -= 1.0;
+    if (beatDelta >= m_beatsPerTrigger) {
+        // catch up for missed beats
+        m_lastTriggerBeat += std::floor(beatDelta / m_beatsPerTrigger) * m_beatsPerTrigger;
+        return true;
+    }
 
-//     return triggered;
-// }
+    return false;
+}
 
-// void ClockFollower::SetSubdivision(const Subdivision subdivision){
-//     m_beatDivisor = SelectCorrectBeatDivision(subdivision);
-// }
+void ClockFollower::SetSubdivision(const Subdivision subdivision){
+    m_subdivision = subdivision;
+    m_beatsPerTrigger = SelectCorrectBeatDivision(subdivision);
+}
 
-// double ClockFollower::SelectCorrectBeatDivision(const Subdivision subdivision) {
-//     switch (subdivision) {
-//         case Subdivision::QUARTER_NOTE:
-//             return 1.0;
+double ClockFollower::SelectCorrectBeatDivision(const Subdivision subdivision) const{
+    switch (subdivision) {
+        case Subdivision::QUARTER_NOTE:
+            return 1.0;
 
-//         case Subdivision::EIGHT_NOTE:
-//             return 2.0;
-//     }
-// }
+        case Subdivision::EIGHT_NOTE:
+            return 0.5;
+    }
+}
 } // namespace

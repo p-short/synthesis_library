@@ -3,7 +3,7 @@
 
 #include "soundsource.h"
 
-namespace musiclib {
+namespace Sculpt {
     namespace Oscillator {
         class Squarewave : public SoundSource {
         public:

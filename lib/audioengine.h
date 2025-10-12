@@ -3,11 +3,10 @@
 
 #include <functional>
 #include <memory>
-//#include "RtAudio.h"
 
 class RtAudio;
 
-namespace musiclib {
+namespace Sculpt {
     class AudioEngine {
     public:
         ~AudioEngine();

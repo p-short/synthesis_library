@@ -7,7 +7,8 @@
 template <class T>
 class AudioFile;
 
-namespace musiclib {
+// TODO: TIDY this up!
+namespace Sculpt {
     class SamplePlayer : public SoundSource {
     public:
         bool LoadWAVFile(const std::filesystem::path& pathToWAVFile);
@@ -20,6 +21,7 @@ namespace musiclib {
         // TODO: Process to default to play once, to play again will need resetting.
         // to loop sample you'll need to set loopEnable to true.
         void Process(double* leftChannel, double* rightChannel) override;
+        void Play();
         bool IsPlaying();
         uint32_t GetCurrentPosition();
         void Reset();
