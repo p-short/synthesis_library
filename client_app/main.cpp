@@ -124,7 +124,7 @@ void Play(double* output) {
     //std::cout << "sampleplayer output: " << WavLeftAndRight[0] << " " << WavLeftAndRight[1] << "\n";
     //std::cout << "sampleplayer.isPLaying(): " << (samplePlayer.IsPlaying() ? "true" : "false") << "\n";
     double gain = 0.20;
-    
+        
     output[0] = (WavLeftAndRightOne[0] + WavLeftAndRightTwo[0]) * gain;
     output[1] = (WavLeftAndRightOne[1] + WavLeftAndRightTwo[1]) * gain;
 }

@@ -13,5 +13,6 @@
 #include "utility.h"
 #include "sampleplayer.h"
 #include "clock.h"
+#include "fx.h"
 
 #endif // MUSICLANGUAGE_LIB_MUSICLANGUANGE_H

@@ -18,6 +18,8 @@ namespace Sculpt {
         };
 
         double MidiNoteToHz(uint32_t midiNote);
+        double MillisecondsToSamples(double numberOfMilliseconds);
+        double SamplesToMilliseconds(double numberOfSamples);
 
         // TODO: add SamplesToMilliseconds
         // TODO: add MillisecondsToSamples

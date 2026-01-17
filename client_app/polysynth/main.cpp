@@ -23,7 +23,7 @@ public:
         for (auto& voice : voices) {
             voice.isActive = false;
             voice.midiNote = 0;
-            voice.envelope.SetParameters(0.5, 0.5, 0.6, .5); 
+            voice.envelope.SetParameters(0.1, 0.2, 0.4, .2); 
             voice.duration = 0.0;
         }
     }
@@ -77,6 +77,8 @@ double sample = 0.0;
 std::array<uint32_t, 3> notes = {60, 67, 72}; // C Major triad
 uint32_t i = 0;
 
+FX::Delay::Classic delay(250 /* quarter of a second */);
+
 void Play(double* output) {
     // advance master clock so clock follower (trigger) knows when to pulse
     masterClock->Process();
@@ -100,11 +102,17 @@ void Play(double* output) {
     }
     
     // output signal to left and right channels
-    output[0] = sample * gain;
+    double dryIn = sample * gain;
+    double wetOut = delay.Process(dryIn);
+
+    output[0] = wetOut;
     output[1] = output[0];
 }
 
 int main() {
+    // setup delay
+    delay.SetMix(0.5);
+    delay.SetFeedback(0.85);
     // create single instance on audio engine
     AudioEngine& dac = AudioEngine::GetInstance();
     dac.AssignCallback(Play); // <-- play (detailed above) gets called every sample
