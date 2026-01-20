@@ -1,8 +1,6 @@
 project(musiclib)
 
 set(SOURCE_FILES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/audioengine.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/midimanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/soundsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sinewave.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/trianglewave.cpp
@@ -16,20 +14,34 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/fx.cpp
 )
 
+if (BUILD_SCULPT_WITH_RTAUDIO)
+    list(APPEND SOURCE_FILES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/audioengine.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/midimanager.cpp
+    )
+endif()
+
 add_library(music_language STATIC ${SOURCE_FILES})
 
 target_include_directories(music_language PRIVATE
-    ${rtaudio_SOURCE_DIR}
     ${xoshiro_SOURCE_DIR}
-    ${rtmidi_SOURCE_DIR}
     ${audiofile_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(music_language PRIVATE
-    rtmidi
-    rtaudio
-    "-framework CoreAudio"
-    "-framework CoreFoundation"
-    "-framework AudioUnit"
-)
+if (BUILD_SCULPT_WITH_RTAUDIO)
+    target_include_directories(music_language PRIVATE
+        ${rtaudio_SOURCE_DIR}
+        ${rtmidi_SOURCE_DIR}
+    )   
+endif()
+
+if (BUILD_SCULPT_WITH_RTAUDIO)
+    target_link_libraries(music_language PRIVATE
+        rtmidi
+        rtaudio
+        "-framework CoreAudio"
+        "-framework CoreFoundation"
+        "-framework AudioUnit"
+    )
+endif()
