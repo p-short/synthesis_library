@@ -3,6 +3,7 @@
 
 #include "soundsource.h"
 #include <array>
+#include <cstddef>
 
 namespace Sculpt {
     namespace Oscillator {
