@@ -12,7 +12,7 @@ class PolySynth {
         bool isActive;
         uint32_t midiNote;
         Oscillator::Sawwave saw;
-        Envelope envelope;
+        Envelope::ADSR envelope;
         double duration;
     };
 
@@ -70,7 +70,7 @@ PolySynth polySynth;
 Oscillator::Sawwave saw;
 Oscillator::Noise::White whiteNoise;
 Utility::Interpolate interpolate(0.0, 1.0, 5.0);
-Envelope envelope(0.1, 0.2, 0.5, 0.2);
+Envelope::ADSR envelope(0.1, 0.2, 0.5, 0.2);
 SamplePlayer click;
 SamplePlayer tambourine;
 double ramp = 0.0;

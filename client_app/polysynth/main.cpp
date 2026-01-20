@@ -12,7 +12,7 @@ class PolySynth {
         bool isActive;
         uint32_t midiNote;
         Oscillator::Sawwave saw;
-        Envelope envelope;
+        Envelope::ADR envelope;
         double duration;
     };
 
@@ -23,7 +23,7 @@ public:
         for (auto& voice : voices) {
             voice.isActive = false;
             voice.midiNote = 0;
-            voice.envelope.SetParameters(0.1, 0.2, 0.4, .2); 
+            voice.envelope.SetParameters(0.1, 0.5, 0.2, 0.5); 
             voice.duration = 0.0;
         }
     }
@@ -40,12 +40,12 @@ public:
         }
     }
 
-    void NoteOff(const uint32_t midiNote) {
-        for (auto& voice : voices) {
-            if (voice.isActive && voice.midiNote == midiNote)
-                voice.envelope.NoteOff();
-        }
-    }
+    // void NoteOff(const uint32_t midiNote) {
+    //     for (auto& voice : voices) {
+    //         if (voice.isActive && voice.midiNote == midiNote)
+    //             voice.envelope.NoteOff();
+    //     }
+    // }
 
     double Process() {
         double mix = 0.0;
@@ -93,10 +93,10 @@ void Play(double* output) {
 
         polySynth.NoteOn(notes[i]);
 
-        if (i > 0)
-            polySynth.NoteOff(notes[i - 1]);
-        else 
-            polySynth.NoteOff(notes[2]);
+        // if (i > 0)
+        //     polySynth.NoteOff(notes[i - 1]);
+        // else 
+        //     polySynth.NoteOff(notes[2]);
 
         i++;
     }
