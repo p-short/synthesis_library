@@ -155,6 +155,7 @@ namespace Sculpt {
 
                     if (currentEnvelopeValue <= 0.0) {
                         currentEnvelopeValue = 0.0;
+                        m_releaseRamp.SetParameters(m_decayLevel, 0.0, m_release);
                         AdvanceStage();
                     }
 

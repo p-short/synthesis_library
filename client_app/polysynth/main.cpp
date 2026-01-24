@@ -23,7 +23,7 @@ public:
         for (auto& voice : voices) {
             voice.isActive = false;
             voice.midiNote = 0;
-            voice.envelope.SetParameters(0.1, 0.5, 0.2, 0.5); 
+            voice.envelope.SetParameters(0.1, 0.5, 0.2, 3); 
             voice.duration = 0.0;
         }
     }
@@ -103,9 +103,9 @@ void Play(double* output) {
     
     // output signal to left and right channels
     double dryIn = sample * gain;
-    double wetOut = delay.Process(dryIn);
+    //double wetOut = delay.Process(dryIn);
 
-    output[0] = wetOut;
+    output[0] = dryIn;
     output[1] = output[0];
 }
 
