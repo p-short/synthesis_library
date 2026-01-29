@@ -10,6 +10,7 @@ namespace Sculpt {
             Interpolate(double startValue, double endValue, double durationInSeconds);
             void SetParameters(double startValue, double endValue, double durationInSeconds);
             double Process();
+            bool IsFinished() const;
 
         private:
             double m_current {};

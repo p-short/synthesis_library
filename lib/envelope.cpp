@@ -117,7 +117,7 @@ namespace Sculpt {
         }
 
         void ADR::NoteOn() {
-            m_attackRamp.SetParameters(0.0, 1.0, m_attack);
+            Reset();
             stage = Stage::ATTACK;
         }
 
@@ -128,12 +128,8 @@ namespace Sculpt {
 
                 case Stage::ATTACK: {
                     currentEnvelopeValue = m_attackRamp.Process();
-
-                    if (currentEnvelopeValue >= 1.0) {
-                        currentEnvelopeValue = 1.0;
-                        m_attackRamp.SetParameters(0.0, 1.0, m_attack);
+                    if (m_attackRamp.IsFinished()) 
                         AdvanceStage();
-                    }
 
                     break;
                 }
@@ -141,11 +137,8 @@ namespace Sculpt {
                 case Stage::DECAY: {
                     currentEnvelopeValue = m_decayRamp.Process();
 
-                    if (currentEnvelopeValue <= m_decayLevel) {
-                        currentEnvelopeValue = m_decayLevel;
-                        m_decayRamp.SetParameters(1.0, m_decayLevel, m_decay);
+                    if (m_decayRamp.IsFinished()) 
                         AdvanceStage();
-                    }
 
                     break;
                 }
@@ -153,16 +146,22 @@ namespace Sculpt {
                 case Stage::RELEASE: {
                     currentEnvelopeValue = m_releaseRamp.Process();
 
-                    if (currentEnvelopeValue <= 0.0) {
-                        currentEnvelopeValue = 0.0;
-                        m_releaseRamp.SetParameters(m_decayLevel, 0.0, m_release);
+                    if (m_releaseRamp.IsFinished()) 
                         AdvanceStage();
-                    }
 
                     break;
                 }    
             }
             return currentEnvelopeValue;
+        }
+
+        void ADR::Reset() {
+            stage = Stage::NOT_ACTIVE;
+            currentEnvelopeValue = 0.0;
+
+            m_attackRamp.SetParameters(0.0, 1.0, m_attack);
+            m_decayRamp.SetParameters(1.0, m_decayLevel, m_decay);
+            m_releaseRamp.SetParameters(m_decayLevel, 0.0, m_release);
         }
 
         void ADR::AdvanceStage() {

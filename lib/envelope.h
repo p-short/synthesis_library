@@ -37,6 +37,7 @@ namespace Sculpt {
             void SetParameters(double attack, double decayLevel, double decay, double release);
             void NoteOn();
             double Process();
+            void Reset();
             
         private:
             Utility::Interpolate m_attackRamp;

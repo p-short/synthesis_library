@@ -5,24 +5,31 @@
 namespace Sculpt {
     namespace Utility {
         Interpolate::Interpolate(double startValue, double endValue, double durationInSeconds) {
-            m_current = startValue;
-            m_endValue = endValue;
-            m_increment = (endValue - startValue) / (44100.0 * durationInSeconds);
+            SetParameters(startValue, endValue, durationInSeconds);
         }
 
         void Interpolate::SetParameters(double startValue, double endValue, double durationInSeconds) {
+            constexpr double kMinTime = 1.0 / 44100.0;
+            durationInSeconds = std::max(durationInSeconds, kMinTime);
+
             m_current = startValue;
             m_endValue = endValue;
             m_increment = (endValue - startValue) / (44100.0 * durationInSeconds);
         }
 
         double Interpolate::Process() {
-            if ((m_increment > 0 && m_current < m_endValue) ||
-                (m_increment < 0 && m_current > m_endValue)) {
-                m_current += m_increment;
-            }   
+            m_current += m_increment;
+
+            if ((m_increment > 0 && m_current >= m_endValue) ||
+                (m_increment < 0 && m_current <= m_endValue)) {
+                m_current = m_endValue;
+            }
 
             return m_current;
+        }
+
+        bool Interpolate::IsFinished() const {
+            return m_current == m_endValue;
         }
 
         double MidiNoteToHz(uint32_t midiNote) {
