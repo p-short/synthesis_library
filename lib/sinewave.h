@@ -14,6 +14,7 @@ namespace Sculpt {
             virtual Sinewave& SetPhase(double phase);
             virtual Sinewave& SetAmplitude(double amplitude) override;
             virtual Sinewave& SetPan(double pan) override;
+            void Reset(); // TODO: add to rest of oscillator classes
         private:
             double m_frequency { 440.0 };
             double m_phase = { 0.0 };

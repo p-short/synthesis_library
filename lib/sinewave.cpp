@@ -33,5 +33,9 @@ namespace Sculpt {
             SoundSource::SetPan(pan);
             return *this;
         }
+
+        void Sinewave::Reset() {
+            m_phase = 0.0;
+        }
     }
 }
