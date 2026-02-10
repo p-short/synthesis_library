@@ -1,4 +1,4 @@
-#include "sculpt.h" /* <-- include sculpt header to use the sculpt library*/
+#include "sculpt.h" /* <-- include sculpt header to use the sculpt library */
 #include <iostream>
 #include <array>
 #include <memory>
@@ -6,13 +6,13 @@
 
 using namespace Sculpt; 
 
-// 16 voice polyphonic synthesizer
+
 class PolySynth {
     struct Voice {
         bool isActive;
         uint32_t midiNote;
-        Oscillator::Sawwave saw;
-        Envelope::ADR envelope;
+        Oscillator::Saw saw;
+        Envelope::ADSR envelope;
         double duration;
     };
 
@@ -40,12 +40,12 @@ public:
         }
     }
 
-    // void NoteOff(const uint32_t midiNote) {
-    //     for (auto& voice : voices) {
-    //         if (voice.isActive && voice.midiNote == midiNote)
-    //             voice.envelope.NoteOff();
-    //     }
-    // }
+    void NoteOff(const uint32_t midiNote) {
+        for (auto& voice : voices) {
+            if (voice.isActive && voice.midiNote == midiNote)
+                voice.envelope.NoteOff();
+        }
+    }
 
     double Process() {
         double mix = 0.0;
@@ -65,15 +65,15 @@ public:
     }
 };
 
-// create PolySynth instance
 PolySynth polySynth;
 
 // create a clock object to trigger our poly synth
 std::unique_ptr<Clock> masterClock = std::make_unique<Clock>(120.0);
 ClockFollower trigger(masterClock.get(), Subdivision::QUARTER_NOTE);
 
-const double gain = 0.25;
+const double gain = 0.5;
 double sample = 0.0;
+
 std::array<uint32_t, 3> notes = {60, 67, 72}; // C Major triad
 uint32_t i = 0;
 
@@ -93,10 +93,10 @@ void Play(double* output) {
 
         polySynth.NoteOn(notes[i]);
 
-        // if (i > 0)
-        //     polySynth.NoteOff(notes[i - 1]);
-        // else 
-        //     polySynth.NoteOff(notes[2]);
+        if (i > 0)
+             polySynth.NoteOff(notes[i - 1]);
+        else 
+             polySynth.NoteOff(notes[2]);
 
         i++;
     }

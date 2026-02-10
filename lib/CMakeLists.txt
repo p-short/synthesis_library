@@ -2,10 +2,10 @@ project(musiclib)
 
 set(SOURCE_FILES 
     ${CMAKE_CURRENT_SOURCE_DIR}/soundsource.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sinewave.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/trianglewave.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/squarewave.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sawwave.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/square.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/saw.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/envelope.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/noise.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utility.cpp

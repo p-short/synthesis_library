@@ -2,10 +2,10 @@
 #define MUSICLANGUAGE_LIB_SCULPT_H
 
 #include "soundsource.h"
-#include "sinewave.h"
-#include "trianglewave.h"
-#include "squarewave.h"
-#include "sawwave.h"
+#include "sine.h"
+#include "triangle.h"
+#include "square.h"
+#include "saw.h"
 #include "noise.h"
 #include "audioengine.h"
 #include "midimanager.h"

@@ -11,7 +11,7 @@ class PolySynth {
     struct Voice {
         bool isActive;
         uint32_t midiNote;
-        Oscillator::Sawwave saw;
+        Oscillator::Saw saw;
         Envelope::ADSR envelope;
         double duration;
     };
@@ -67,7 +67,7 @@ public:
 
 PolySynth polySynth;
 
-Oscillator::Sawwave saw;
+Oscillator::Saw saw;
 Oscillator::Noise::White whiteNoise;
 Utility::Interpolate interpolate(0.0, 1.0, 5.0);
 Envelope::ADSR envelope(0.1, 0.2, 0.5, 0.2);
